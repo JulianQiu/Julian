@@ -1,0 +1,32 @@
+name: Docker Image CI
+
+# 触发条件：每次代码推送到 main 或任何 PR 时都触发
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # GitHub Actions 运行环境，选择 Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Checkout 仓库代码
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # 使用 GitHub Secrets 中存储的 Docker 用户名
+          password: ${{ secrets.DOCKER_PASSWORD }}  # 使用 GitHub Secrets 中存储的 Docker 密码
+
+      - name: Build the Docker image
+        run: |
+          docker build -t your-image-name:latest .
+        
+      - name: Push the Docker image
+        run: |
+          docker push your-image-name:latest  # 推送到 Docker 仓库
